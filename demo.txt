@@ -1,0 +1,74 @@
+
+开始
+/* 无论是你自己写JDBC还是通过连接池，你首先得有一个操作的connection */
+Connection con;
+
+/* 初始化mysql数据库操作器 */
+Mdao dao=new MysqlDao(con);
+
+/* 通过ID查找单条记录 */
+Integer id=1;
+Map<String,String> data=dao.table("table_name").find(id);
+
+/* 通过条件查找多条记录 */
+Map<String,Object> map=new HasMap<String,Object>;
+map.put("state",1);
+map.put("name","tiky");
+
+List<Map<String,String>> list=dao.table("table_name").where(map).select();
+
+/* 如果要排序或者限制长度呢 */
+List<Map<String,String>> list=dao.table("table_name").where(map).order("id desc").limit(10).select();
+
+/* 添加数据 */
+Map<String,Object> data=new HaspMap<String,Object>();
+data.put("name","tiky");
+data.put("add_time","2016-12-12");
+
+Integer id=dao.table("table_name").data(data).add();//msyql返回的自增ID号
+
+/* 编辑数据 */
+Map<String,Object> data=new HaspMap<String,Object>();
+data.put("name","tiky");
+data.put("add_time","2016-12-12");
+
+Map<String,Object> map=new HasMap<String,Object>;
+map.put("state",1);
+
+Integer rows=dao.table("table_name").data(data).where(map).save();//影响的行数
+
+/* 删除数据 */
+
+Map<String,Object> map=new HasMap<String,Object>;
+map.put("state",1);
+
+Integer rows=dao.table("table_name").where(map).delete();//影响的行数
+
+/* 批量添加 */
+
+List<Map<String,Object>> data_list=new ArrayList<HaspMap<String,Object>()>;
+
+Integer rows=dao.table("table_name").addAll(data_list);//影响的行数
+
+/* 执行原生SQL 支持参数名 */
+查询:List<Map<String,String>> list=dao.select("sql",map);
+执行:Integer rows=dao.execute("sql",map);
+
+
+/* 事务 */
+try
+{
+	con.setAutoCommit(false);
+	
+	//做你想做的
+	
+	con.commit();
+}
+catch(Exception ex)
+{
+	con.rollback();
+}
+finally
+{
+	con.setAutoCommit(true);
+}
